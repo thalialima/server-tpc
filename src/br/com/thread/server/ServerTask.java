@@ -19,7 +19,10 @@ public class ServerTask {
             DistributeTasks distributeTasks = new DistributeTasks(socket);
 
             executorService.execute(distributeTasks);
-
+            break;
         }
+        serverSocket.close();
     }
+
+
 }

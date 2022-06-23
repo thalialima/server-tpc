@@ -11,19 +11,45 @@ public class ClientServer {
         System.out.println("Estabelecendo conexões");
 
         PrintStream outPut = new PrintStream(socket.getOutputStream());
+        Scanner inPut = new Scanner(socket.getInputStream());
 
         System.out.println("Enviando comando para o servidor...");
 
-        outPut.println("c1");
-
         Scanner keyboard = new Scanner(System.in);
-        keyboard.nextLine();
-        outPut.close();
+
+        Thread sendCommands = new Thread(() -> {
+            while (keyboard.hasNextLine()) {
+                String command = keyboard.nextLine();
+                outPut.println(command);
+
+                if (command.trim().equals("")) {
+                    break;
+                }
+            }
+            outPut.close();
+        });
+
+        Thread receiveResponse = new Thread(() -> {
+            while (inPut.hasNextLine()) {
+                String response = inPut.nextLine();
+                System.out.println("Resposta do servidor: ");
+                System.out.println(response);
+            }
+            inPut.close();
+        });
+
+        sendCommands.start();
+        receiveResponse.start();
+
+        try {
+            sendCommands.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Fechando o socket do cliente");
+
         socket.close();
 
-
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
-        socket.close();
     }
 }
