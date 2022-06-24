@@ -3,14 +3,18 @@ package br.com.thread.server;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
 
 public class DistributeTasks implements Runnable {
     private MyServer mainServer;
     private Socket socket;
 
-    public DistributeTasks(Socket serverSocket, MyServer mainServer) {
+    private BlockingQueue<String> commands;
+
+    public DistributeTasks(Socket serverSocket, MyServer mainServer, BlockingQueue<String> commands) {
         this.socket = serverSocket;
         this.mainServer = mainServer;
+        this.commands = commands;
     }
 
     @Override
@@ -33,6 +37,11 @@ public class DistributeTasks implements Runnable {
                     case "c2" :
                         System.out.println("Recebendo comando c2");
                         outputServer.println("Respondendo comando c2");
+                        break;
+                    case "c3" :
+                        System.out.println("Recebendo comando c3");
+                        this.commands.put("c3");
+                        outputServer.println("Adicionando comando c3 na fila");
                         break;
                     case "fim" :
                         System.out.println("Parando servidor principal");
