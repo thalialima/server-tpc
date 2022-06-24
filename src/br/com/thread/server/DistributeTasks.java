@@ -5,10 +5,12 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class DistributeTasks implements Runnable {
+    private MyServer mainServer;
     private Socket socket;
 
-    public DistributeTasks(Socket serverSocket) {
+    public DistributeTasks(Socket serverSocket, MyServer mainServer) {
         this.socket = serverSocket;
+        this.mainServer = mainServer;
     }
 
     @Override
@@ -28,10 +30,13 @@ public class DistributeTasks implements Runnable {
                         System.out.println("comando c1 recebido");
                         outputServer.println("Respondendo comando c1");
                         break;
-
                     case "c2" :
                         System.out.println("Recebendo comando c2");
                         outputServer.println("Respondendo comando c2");
+                        break;
+                    case "fim" :
+                        System.out.println("Parando servidor principal");
+                        this.mainServer.stop();
                         break;
                     default:
                         System.out.println("Nenhum válido comando recebido!");
@@ -43,7 +48,6 @@ public class DistributeTasks implements Runnable {
             inputClient.close();
             outputServer.close();
             socket.close();
-            //Thread.sleep(20000);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
